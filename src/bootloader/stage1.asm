@@ -2,7 +2,7 @@
 
 bits 16
 
-msg db 'Printing bios!!!!', 0
+msg db 'ABCD', 0
 
 cli
 xor ax, ax
@@ -30,3 +30,7 @@ mov si, msg
 
 times 510-($-$$) db 0
 dw 0xAA55
+
+; TODO:
+; Validate that if I write on the stack, the first byte is not at  0x7C00  so does not overwrite the bootloader code.
+; On that address the first bye of the string is written. check with debugger
