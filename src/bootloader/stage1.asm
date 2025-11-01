@@ -9,7 +9,7 @@ xor ax, ax
 mov ds, ax
 mov es, ax
 mov ss, ax
-mov sp, 0x7C00
+mov sp, 0x7C00 ; Safe stack location. A push will not overlap and won't overwrite the first byte of bootloader
 sti
 xchg bx, bx
 mov si, msg
@@ -34,9 +34,7 @@ msg db 'ABCD', 0
 times 510-($-$$) db 0
 dw 0xAA55
 
-; TODO:
-; Validate that if I write on the stack, the first byte is not at  0x7C00  so does not overwrite the bootloader code.
-; On that address the first bye of the string is written. check with debugger
+
 
 ; NOTES: 
 ; Moved the msg literal string to the bottom. If you place it at the top it counts as instructions if you load it as a plain binary

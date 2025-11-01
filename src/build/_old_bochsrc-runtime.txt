@@ -1,0 +1,24 @@
+display_library: win32, options="traphotkeys, autoscale, gui_debug"
+cpu: model=core2_penryn_t9600, count=1, ips=50000000, reset_on_triple_fault=1, ignore_bad_msrs=1, msrs="msrs.def"
+cpu: cpuid_limit_winnt=0
+memory: guest=512, host=256, block_size=512
+romimage: file=$BXSHARE/BIOS-bochs-latest, options=fastboot
+vgaromimage: file=$BXSHARE/VGABIOS-lgpl-latest.bin
+keyboard: type=mf, serial_delay=150
+mouse: enabled=0
+pci: enabled=1, chipset=i440fx
+private_colormap: enabled=0
+floppya: 1_44=C:\Users\mihe\Dropbox\TusMuertOS-Oct2025\src\build\_old_kernel.img, status=inserted, write_protected=1
+boot: floppy
+floppy_bootsig_check: disabled=0
+log: C:\Users\mihe\Dropbox\TusMuertOS-Oct2025\src\build\_old_bochsout.txt
+panic: action=ask
+error: action=report
+info: action=report
+debug: action=ignore, pci=report # report BX_DEBUG from module 'pci'
+debugger_log: -
+parport1: enabled=1, file="parport.out"
+sound: driver=default, waveout=/dev/dsp. wavein=, midiout=
+speaker: enabled=1, mode=sound, volume=15
+magic_break: enabled=1
+megs: 16
