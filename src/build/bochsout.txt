@@ -29,7 +29,7 @@
 00000000000i[USBCTL] Pluggable USB devices
 00000000000i[USBCTL]   floppy mouse tablet keypad keyboard hub disk cdrom
 00000000000i[USBCTL]   printer
-00000000000i[MEM0  ] allocated memory at 000001B5C07C7040. after alignment, vector=000001B5C07C8000, block_size = 512K
+00000000000i[MEM0  ] allocated memory at 000001FC6FBC6040. after alignment, vector=000001FC6FBC7000, block_size = 512K
 00000000000i[MEM0  ] 16.00MB
 00000000000i[MEM0  ] mem block size = 0x00080000, blocks=32
 00000000000i[MEM0  ] rom at 0xfffe0000/131072 ('C:\Program Files\Bochs-3.0/BIOS-bochs-latest')
@@ -41,7 +41,7 @@
 00000000000i[DEV   ] PIIX3 PCI-to-ISA bridge present at device 1, function 0
 00000000000i[PLUGIN] init_dev of 'cmos' plugin device by virtual method
 00000000000i[CMOS  ] Using local time for initial clock
-00000000000i[CMOS  ] Setting initial clock to: Sat Nov  1  0:09:30   2025 tz=utc (time0=1761955770)
+00000000000i[CMOS  ] Setting initial clock to: Sat Nov  1 12:47:18   2025 tz=utc (time0=1762001238)
 00000000000i[PLUGIN] init_dev of 'dma' plugin device by virtual method
 00000000000i[DMA   ] channel 4 used by cascade
 00000000000i[PLUGIN] init_dev of 'pic' plugin device by virtual method
@@ -284,3 +284,43 @@
 00001995503i[BXVGA ] VBE known Display Interface b0c5
 00001996924i[VBIOS ] VBE Bios ID: vbe.c 2025-01-08
 00004330604i[BIOS  ] Booting from 0000:7c00
+00004330660i[CPU0  ] [4330660] Stopped on MAGIC BREAKPOINT
+00004330668i[CPU0  ] [4330668] Stopped on MAGIC BREAKPOINT
+00004332337i[CPU0  ] [4332337] Stopped on MAGIC BREAKPOINT
+00005494816i[CPU0  ] [5494816] Stopped on MAGIC BREAKPOINT
+00008241045i[CPU0  ] [8241045] Stopped on MAGIC BREAKPOINT
+00010987374i[CPU0  ] [10987374] Stopped on MAGIC BREAKPOINT
+00013733603i[CPU0  ] [13733603] Stopped on MAGIC BREAKPOINT
+00016479882i[CPU0  ] [16479882] Stopped on MAGIC BREAKPOINT
+00019226161i[CPU0  ] [19226161] Stopped on MAGIC BREAKPOINT
+00021972460i[CPU0  ] [21972460] Stopped on MAGIC BREAKPOINT
+00024718689i[CPU0  ] [24718689] Stopped on MAGIC BREAKPOINT
+00027465018i[CPU0  ] [27465018] Stopped on MAGIC BREAKPOINT
+00030211267i[CPU0  ] [30211267] Stopped on MAGIC BREAKPOINT
+00032957496i[CPU0  ] [32957496] Stopped on MAGIC BREAKPOINT
+00035703825i[CPU0  ] [35703825] Stopped on MAGIC BREAKPOINT
+00038450054i[CPU0  ] [38450054] Stopped on MAGIC BREAKPOINT
+00041196333i[CPU0  ] [41196333] Stopped on MAGIC BREAKPOINT
+00041196333i[CPU0  ] CPU is in real mode (active)
+00041196333i[CPU0  ] CS.mode = 16 bit
+00041196333i[CPU0  ] SS.mode = 16 bit
+00041196333i[CPU0  ] EFER = 0x00000000: ffxsr nxe lma lme sce
+00041196333i[CPU0  ] XCR0=0x00000001: tiledata tilecfg hwp lbr uintr hdc cet_s cet_u pasid pkru pt hi_zmm zmm_hi256 opmask bndcfg bndregs ymm sse FPU
+00041196333i[CPU0  ] | EAX=60000e00  EBX=00000007  ECX=00090000  EDX=00000000
+00041196333i[CPU0  ] | ESP=00007c00  EBP=00000000  ESI=000e7c2d  EDI=0000070c
+00041196333i[CPU0  ] | EFLAGS=00000246: id vip vif ac vm rf nt IOPL=0 of df IF tf sf ZF af PF cf
+00041196333i[CPU0  ] | SEG sltr(index|ti|rpl)     base    limit G D
+00041196333i[CPU0  ] |  CS:0000( 0004| 0|  0) 00000000 0000ffff 0 0
+00041196333i[CPU0  ] |  DS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+00041196333i[CPU0  ] |  SS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+00041196333i[CPU0  ] |  ES:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+00041196333i[CPU0  ] |  FS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+00041196333i[CPU0  ] |  GS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+00041196333i[CPU0  ] | EIP=00007c25 (00007c25)
+00041196333i[CPU0  ] | CR0=0x60000010: pg CD NW ac wp ne ET ts em mp pe
+00041196333i[CPU0  ] | CR2=0x00000000
+00041196333i[CPU0  ] | CR3=0x00000000
+00041196333i[CPU0  ] | CR4=0x00000000: lass uintr pks cet pke smap smep keylock osxsave pcid fsgsbase smx vmx la57 umip osxmmexcpt osfxsr pce pge mce pae pse de tsd pvi vme
+00041196333d[PCI   ] Exit
+00041196333i[CMOS  ] Last time: 1762001238 tz=utc (Sat Nov  1 12:47:18   2025)
+00041196333i[SIM   ] quit_sim called with exit code 0
