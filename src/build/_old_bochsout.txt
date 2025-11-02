@@ -29,7 +29,7 @@
 00000000000i[USBCTL] Pluggable USB devices
 00000000000i[USBCTL]   floppy mouse tablet keypad keyboard hub disk cdrom
 00000000000i[USBCTL]   printer
-00000000000i[MEM0  ] allocated memory at 0000015D04D3F040. after alignment, vector=0000015D04D40000, block_size = 512K
+00000000000i[MEM0  ] allocated memory at 0000021361DAB040. after alignment, vector=0000021361DAC000, block_size = 512K
 00000000000i[MEM0  ] 16.00MB
 00000000000i[MEM0  ] mem block size = 0x00080000, blocks=32
 00000000000i[MEM0  ] rom at 0xfffe0000/131072 ('C:\Program Files\Bochs-3.0/BIOS-bochs-latest')
@@ -41,7 +41,7 @@
 00000000000i[DEV   ] PIIX3 PCI-to-ISA bridge present at device 1, function 0
 00000000000i[PLUGIN] init_dev of 'cmos' plugin device by virtual method
 00000000000i[CMOS  ] Using local time for initial clock
-00000000000i[CMOS  ] Setting initial clock to: Sat Nov  1 15:53:52   2025 tz=utc (time0=1762012432)
+00000000000i[CMOS  ] Setting initial clock to: Sun Nov  2 16:26:24   2025 tz=utc (time0=1762100784)
 00000000000i[PLUGIN] init_dev of 'dma' plugin device by virtual method
 00000000000i[DMA   ] channel 4 used by cascade
 00000000000i[PLUGIN] init_dev of 'pic' plugin device by virtual method
@@ -284,30 +284,26 @@
 00001995503i[BXVGA ] VBE known Display Interface b0c5
 00001996924i[VBIOS ] VBE Bios ID: vbe.c 2025-01-08
 00004330604i[BIOS  ] Booting from 0000:7c00
-00028075185e[DEV   ] read from port 0x0020 with len 4 returns 0xffffffff
-00028075187e[DEV   ] read from port 0x0021 with len 4 returns 0xffffffff
-00028075189e[DEV   ] read from port 0x00a0 with len 4 returns 0xffffffff
-00028075191e[DEV   ] read from port 0x00a1 with len 4 returns 0xffffffff
-04831407264i[CPU0  ] CPU is in protected mode (active)
-04831407264i[CPU0  ] CS.mode = 32 bit
-04831407264i[CPU0  ] SS.mode = 32 bit
-04831407264i[CPU0  ] EFER = 0x00000000: ffxsr nxe lma lme sce
-04831407264i[CPU0  ] XCR0=0x00000001: tiledata tilecfg hwp lbr uintr hdc cet_s cet_u pasid pkru pt hi_zmm zmm_hi256 opmask bndcfg bndregs ymm sse FPU
-04831407264i[CPU0  ] | EAX=00000001  EBX=0000b200  ECX=00007b5c  EDX=00000007
-04831407264i[CPU0  ] | ESP=00007c00  EBP=00007c00  ESI=00002780  EDI=00011000
-04831407264i[CPU0  ] | EFLAGS=00000206: id vip vif ac vm rf nt IOPL=0 of df IF tf sf zf af PF cf
-04831407264i[CPU0  ] | SEG sltr(index|ti|rpl)     base    limit G D
-04831407264i[CPU0  ] |  CS:0008( 0001| 0|  0) 00000000 ffffffff 1 1
-04831407264i[CPU0  ] |  DS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-04831407264i[CPU0  ] |  SS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-04831407264i[CPU0  ] |  ES:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-04831407264i[CPU0  ] |  FS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-04831407264i[CPU0  ] |  GS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-04831407264i[CPU0  ] | EIP=00007fd4 (00007fd4)
-04831407264i[CPU0  ] | CR0=0x60000011: pg CD NW ac wp ne ET ts em mp PE
-04831407264i[CPU0  ] | CR2=0x00000000
-04831407264i[CPU0  ] | CR3=0x00000000
-04831407264i[CPU0  ] | CR4=0x00000000: lass uintr pks cet pke smap smep keylock osxsave pcid fsgsbase smx vmx la57 umip osxmmexcpt osfxsr pce pge mce pae pse de tsd pvi vme
-04831407264d[PCI   ] Exit
-04831407264i[CMOS  ] Last time: 1762012528 tz=utc (Sat Nov  1 15:55:28   2025)
-04831407264i[SIM   ] quit_sim called with exit code 0
+00004344976i[CPU0  ] CPU is in real mode (active)
+00004344976i[CPU0  ] CS.mode = 16 bit
+00004344976i[CPU0  ] SS.mode = 16 bit
+00004344976i[CPU0  ] EFER = 0x00000000: ffxsr nxe lma lme sce
+00004344976i[CPU0  ] XCR0=0x00000001: tiledata tilecfg hwp lbr uintr hdc cet_s cet_u pasid pkru pt hi_zmm zmm_hi256 opmask bndcfg bndregs ymm sse FPU
+00004344976i[CPU0  ] | EAX=00000e6f  EBX=00000000  ECX=00090000  EDX=00000000
+00004344976i[CPU0  ] | ESP=00007bd4  EBP=00000000  ESI=000e7cd6  EDI=0000070c
+00004344976i[CPU0  ] | EFLAGS=00000002: id vip vif ac vm rf nt IOPL=0 of df if tf sf zf af pf cf
+00004344976i[CPU0  ] | SEG sltr(index|ti|rpl)     base    limit G D
+00004344976i[CPU0  ] |  CS:c000( 0004| 0|  0) 000c0000 0000ffff 0 0
+00004344976i[CPU0  ] |  DS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+00004344976i[CPU0  ] |  SS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+00004344976i[CPU0  ] |  ES:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+00004344976i[CPU0  ] |  FS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+00004344976i[CPU0  ] |  GS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+00004344976i[CPU0  ] | EIP=0000023b (0000023b)
+00004344976i[CPU0  ] | CR0=0x60000010: pg CD NW ac wp ne ET ts em mp pe
+00004344976i[CPU0  ] | CR2=0x00000000
+00004344976i[CPU0  ] | CR3=0x00000000
+00004344976i[CPU0  ] | CR4=0x00000000: lass uintr pks cet pke smap smep keylock osxsave pcid fsgsbase smx vmx la57 umip osxmmexcpt osfxsr pce pge mce pae pse de tsd pvi vme
+00004344976d[PCI   ] Exit
+00004344976i[CMOS  ] Last time: 1762100784 tz=utc (Sun Nov  2 16:26:24   2025)
+00004344976i[SIM   ] quit_sim called with exit code 0
