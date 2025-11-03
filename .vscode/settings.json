@@ -18,5 +18,8 @@
     "editor.suggestOnTriggerCharacters": false,
     "editor.wordBasedSuggestions": "off",
     "editor.inlineSuggest.enabled": false
+},
+"files.associations": {
+    "types.h": "c"
 }
 }
