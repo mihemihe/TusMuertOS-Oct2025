@@ -28,6 +28,19 @@
                     "ignoreFailures": true
                 }
             ]
+        },
+        {
+            "name": "Debug Rust (cargo run)",
+            "type": "lldb",
+            "request": "launch",
+            "cargo": {
+                "args": [
+                    "run"
+                ]
+            },
+            "cwd": "${workspaceFolder}",
+            "args": [],
+            "stopOnEntry": false
         }
     ]
 }
