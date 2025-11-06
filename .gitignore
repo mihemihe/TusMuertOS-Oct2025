@@ -19,14 +19,14 @@ misc/
 /src/helpers/bin
 
 
-/src/helpers/emptydisk01/target
-/src/helpers/emptydisk01/debug
+/src/helpers/emptydisk01/target/*
+/src/helpers/emptydisk01/debug/*
 
-/src/helpers/fatstructure02/target
-/src/helpers/fatstructure02/debug
+/src/helpers/fatstructure02/target/*
+/src/helpers/fatstructure02/debug/*
 
-/src/helpers/injectbin03/target
-/src/helpers/injectbin03/debug
+/src/helpers/injectbin03/target/*
+/src/helpers/injectbin03/debug/*
 
-/src/helpers/addfiles04/target
-/src/helpers/addfiles04/debug
+/src/helpers/addfiles04/target/*
+/src/helpers/addfiles04/debug/*
