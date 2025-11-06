@@ -16,7 +16,7 @@ misc/
 !.vscode/extensions.json
 !.vscode/*.code-snippets
 
-/src/helpers/bin
+/src/helpers/bin/*
 
 
 /src/helpers/emptydisk01/target/*
