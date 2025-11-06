@@ -17,11 +17,11 @@ struct Args {
 }
 
 fn main() -> Result<()> {
-    let mut args: Args;
-    let debug: bool = true;
+    let args: Args;
+    let debug: bool = false;
     if debug {
         let synthetic_args = vec![
-            "myprogram", // always include argv[0]
+            "emptydisk01", // always include argv[0]
             "--size-mb",
             "5",
             "--out",
@@ -56,7 +56,7 @@ fn create_image(size_mb: u64, out_path: &Path) -> Result<()> {
         aligned_bytes
     );
 
-    Ok(()) //temp
+    Ok(())
 }
 
 fn next_available_name(base: &Path) -> Result<PathBuf> {

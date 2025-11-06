@@ -1,0 +1,6 @@
+# Increase how long a line can be before rustfmt wraps it
+max_width = 150
+
+# Prevent aggressive wrapping of function and macro arguments
+fn_call_width = 100
+chain_width = 100
