@@ -11,16 +11,13 @@
 //   FAT tables
 //   Root directory structure
 */
-#![allow(warnings)] // REMOVE THIS !!!!!!!                 ! 
+//#![allow(warnings)] // REMOVE THIS !!!!!!!                 !
 use anyhow::{Context, Ok, Result, bail, ensure};
 use clap::Parser;
+use std::fs;
 use std::fs::OpenOptions;
 use std::io::{BufReader, Read, Seek, SeekFrom, Write};
-use std::{
-    fmt::format,
-    fs,
-    path::{self, PathBuf},
-};
+use std::path::{Path, PathBuf};
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -32,7 +29,7 @@ struct Args {
 
 #[repr(C, packed)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct F32_1st_Partition {
+struct F32_1stPartition {
     boot_flag: u8,      // 0x80 = active/bootable, 0x00 = not active
     start_chs: [u8; 3], // CHS start (we keep zeroed — comment here in case I want CHS later)
     part_type: u8,      // partition type (0x0C = FAT32 LBA)
@@ -49,13 +46,13 @@ fn main() -> Result<()> {
             "emptydisk01", // always include argv[0]
             "--filename",
             //"../../../aaa.img",
-            "../aaa.img",
+            "../tempimage.img",
         ];
         args = Args::parse_from(synthetic_args);
-        print!("{:?}\n", args);
+        println!("{:?}", args);
     } else {
         args = Args::parse();
-        print!("{:?}\n", args);
+        println!("{:?}", args);
     }
     let path_file = args.filename;
     // Health checks, file exist, not zero, multiple of 512 and 1MB, and is all 0x00
@@ -70,7 +67,7 @@ fn main() -> Result<()> {
     // Check if file exist first, if not chain errors
 }
 
-fn check_file_exist(pathfile: &PathBuf) -> Result<()> {
+fn check_file_exist(pathfile: &Path) -> Result<()> {
     let file_exist = pathfile.is_file();
 
     if !file_exist {
@@ -115,13 +112,13 @@ fn check_all_zeroes(pathfile: &PathBuf) -> Result<()> {
 }
 
 fn inject_fat32_partition_table(pathfile: &PathBuf) -> Result<()> {
-    let entry = F32_1st_Partition {
+    let entry = F32_1stPartition {
         boot_flag: 0x80,
-        start_chs: [0, 0, 0],
+        start_chs: [0x00, 0x01, 0x10],
         part_type: 0x0C,
-        end_chs: [0, 0, 0],
+        end_chs: [0x03, 0xA0, 0x1F],
         start_lba: 2048u32,
-        sectors: 67584u32, //TODO Add a calculation to addapt to diferent sizes
+        sectors: 67584u32,
     };
 
     let mut bytes_to_inject = [0u8; 16];
@@ -138,10 +135,10 @@ fn inject_fat32_partition_table(pathfile: &PathBuf) -> Result<()> {
     let offset_1st_partition_entry: u64 = 0x1BE; // byte 446 (off by one???)
     let offset_magic_boot_number: u64 = 0x1FE; // byte 510 (off by one???)
 
-    file_handler.seek(SeekFrom::Start((offset_1st_partition_entry)))?;
+    file_handler.seek(SeekFrom::Start(offset_1st_partition_entry))?;
     file_handler.write_all(&bytes_to_inject)?;
 
-    file_handler.seek(SeekFrom::Start(510))?;
+    file_handler.seek(SeekFrom::Start(offset_magic_boot_number))?;
     file_handler.write_all(&[0x55, 0xAA])?;
 
     Ok(())
