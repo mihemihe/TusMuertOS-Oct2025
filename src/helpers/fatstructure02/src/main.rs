@@ -129,7 +129,7 @@ fn main() -> Result<()> {
         //  BPB 2.0
         bytes_per_sector: 512,  // 0x00 0x02
         sectors_per_cluster: 1, //
-        reserved_sectors: 32,
+        reserved_sectors: 32,   //0x20
         number_FATs: 2,
         root_entry_count: 0,      // Unused on FAT32 I think related to offset 0x42 (0x29/0x28)
         total_logical_sectors: 0, // FAT12/16, See the offset 0x20 for FAT32 and use 4 bytes
@@ -137,29 +137,32 @@ fn main() -> Result<()> {
         sectors_per_FAT16: 0,     // see offset 0x24 for FAT32
 
         // BPB 3.31
-        sectors_per_track: 63,
-        number_of_heads: 16,
-        hidden_sectors: 0,                // DOUBLE CHECK THIS VALUE, the USB is different 2048
-        total_count_sectors_FAT32: 67584, // somehow related to 2048 |0x20|
+        sectors_per_track: 63,            // 0x3F, for interrupt 0x13!
+        number_of_heads: 16,              // for interrupt 0x13
+        hidden_sectors: 0,                // DOUBLE CHECK THIS VALUE, the USB is different 2048. Dont use to aling start of data
+        total_count_sectors_FAT32: 67584, // somehow related to 2048 |0x20| 0x00 0x08 0x01 0x00 le, relevant for 0x13
 
         // FAT32 Extended BPB
-        sectors_per_FAT32: 520, // |0x24|
+        sectors_per_FAT32: 520, // |0x24| 0x08 0x02
         flags_FAT32: 0,
         version_FAT32: 0,
-        root_cluster: 2,
+        root_cluster: 2,       // where the root directory cluster begins. The content of the dir is a file itself
         FSInfo_sector: 1,      // Sector 1
         backup_boot_sector: 6, // Sector 6
         reserved0: [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-        physical_drive_number: 0x80, // First HD. DL = 0x80 (Check if this is true in Bochs)
+        physical_drive_number: 0x80, // First HD. DL = 0x80 (Check if this is true in Bochs). Int 0x13 drive number
         reserved1: 0x00,
         boot_signature: 0x29,  // Extended BPB present |0x42|
-        volume_ID: 1195118859, // 0B 11 3C 47
+        volume_ID: 1195118859, // 0B 11 3C 47 Microsoft suggest combining date and time
         volume_label: "TUSMUERTOS2".as_bytes().try_into().unwrap(),
         file_system_type: [0x46, 0x41, 0x54, 0x33, 0x32, 0x20, 0x20, 0x20], //FAT32bbb
-        reserved3_for_code: [0xFA, 0xFA, 0xFA, 0xFA, 0xFA, 0xFA, 0xFA, 0xFA], // this is dummy, calculate real value
+        reserved3_for_code: [0xFA, 0xFA, 0xFA, 0xFA, 0xFA, 0xFA, 0xFA, 0xFA], // this is dummy, calculate real value I think 420bytes
         boot_sector_signature: [0x55, 0xAA],
-        // the comon part has at the end more stuff like pyhiscial drive and boot magic
+        // The FAT type is determined solely by the count of clusters on the volume
+        // RootDirSectors = ((BPB_RootEntCnt * 32) + (BPB_BytsPerSec – 1)) / BPB_BytsPerSec . this gives 0, correct for FAT32
     };
+
+    inject_VBR(&path_file, vbr)?;
 
     Ok(())
 
@@ -324,5 +327,48 @@ fn chs_decode(chs: [u8; 3]) -> (u16, u8, u16) {
 }
 
 fn inject_VBR(pathfile: &PathBuf, vbr: VBR) -> Result<()> {
+    // Build the 512-byte VBR sector
+    let mut bytes_to_inject = [0u8; 512];
+
+    // DOS BPB + FAT32 EBPB layout
+    bytes_to_inject[0x000..0x003].copy_from_slice(&vbr.jump_to_boot);
+    bytes_to_inject[0x003..0x00B].copy_from_slice(&vbr.oem);
+    bytes_to_inject[0x00B..0x00D].copy_from_slice(&vbr.bytes_per_sector.to_le_bytes());
+    bytes_to_inject[0x00D] = vbr.sectors_per_cluster;
+    bytes_to_inject[0x00E..0x010].copy_from_slice(&vbr.reserved_sectors.to_le_bytes());
+    bytes_to_inject[0x010] = vbr.number_FATs;
+    bytes_to_inject[0x011..0x013].copy_from_slice(&vbr.root_entry_count.to_le_bytes());
+    bytes_to_inject[0x013..0x015].copy_from_slice(&vbr.total_logical_sectors.to_le_bytes());
+    bytes_to_inject[0x015] = vbr.media_descriptor;
+    bytes_to_inject[0x016..0x018].copy_from_slice(&vbr.sectors_per_FAT16.to_le_bytes());
+    bytes_to_inject[0x018..0x01A].copy_from_slice(&vbr.sectors_per_track.to_le_bytes());
+    bytes_to_inject[0x01A..0x01C].copy_from_slice(&vbr.number_of_heads.to_le_bytes());
+    bytes_to_inject[0x01C..0x020].copy_from_slice(&vbr.hidden_sectors.to_le_bytes());
+    bytes_to_inject[0x020..0x024].copy_from_slice(&vbr.total_count_sectors_FAT32.to_le_bytes());
+    bytes_to_inject[0x024..0x028].copy_from_slice(&vbr.sectors_per_FAT32.to_le_bytes());
+    bytes_to_inject[0x028..0x02A].copy_from_slice(&vbr.flags_FAT32.to_le_bytes());
+    bytes_to_inject[0x02A..0x02C].copy_from_slice(&vbr.version_FAT32.to_le_bytes());
+    bytes_to_inject[0x02C..0x030].copy_from_slice(&vbr.root_cluster.to_le_bytes());
+    bytes_to_inject[0x030..0x032].copy_from_slice(&vbr.FSInfo_sector.to_le_bytes());
+    bytes_to_inject[0x032..0x034].copy_from_slice(&vbr.backup_boot_sector.to_le_bytes());
+    bytes_to_inject[0x034..0x040].copy_from_slice(&vbr.reserved0);
+    bytes_to_inject[0x040] = vbr.physical_drive_number;
+    bytes_to_inject[0x041] = vbr.reserved1;
+    bytes_to_inject[0x042] = vbr.boot_signature;
+    bytes_to_inject[0x043..0x047].copy_from_slice(&vbr.volume_ID.to_le_bytes());
+    bytes_to_inject[0x047..0x052].copy_from_slice(&vbr.volume_label);
+    bytes_to_inject[0x052..0x05A].copy_from_slice(&vbr.file_system_type);
+    bytes_to_inject[0x05A..0x062].copy_from_slice(&vbr.reserved3_for_code);
+    bytes_to_inject[0x1FE..0x200].copy_from_slice(&vbr.boot_sector_signature);
+
+    // Write at offset 1 MiB (0x100000)
+    let mut file_handler = OpenOptions::new().read(true).write(true).open(pathfile)?;
+    let offset_vbr: u64 = 0x1_00_000;
+
+    file_handler.seek(SeekFrom::Start(offset_vbr))?;
+    file_handler.write_all(&bytes_to_inject)?;
+
+    println!("FAT32 VBR injected (512 bytes) at offset {:#X} (LBA 2048)", offset_vbr);
+
     Ok(())
 }
