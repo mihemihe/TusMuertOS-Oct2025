@@ -80,6 +80,18 @@ struct VBR {
     boot_sector_signature: [u8; 2], // Boot sector signature (0x55, 0xAA)
 }
 
+#[repr(C, packed)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct FSInfo {
+    lead_signature: [u8; 4],
+    gap: [u8; 480],
+    second_signature: [u8; 4],
+    free_count: [u8; 4],
+    next_free: [u8; 4],
+    reserved12: [u8; 12],
+    trail_signature: [u8; 4],
+}
+
 fn main() -> Result<()> {
     let args: Args;
     let debug: bool = true;
@@ -161,8 +173,19 @@ fn main() -> Result<()> {
         // The FAT type is determined solely by the count of clusters on the volume
         // RootDirSectors = ((BPB_RootEntCnt * 32) + (BPB_BytsPerSec – 1)) / BPB_BytsPerSec . this gives 0, correct for FAT32
     };
-
     inject_VBR(&path_file, vbr)?;
+
+    // This is the FSInfo before adding any file
+    let fsinfo = FSInfo {
+        lead_signature: [0x52, 0x52, 0x61, 0x41],
+        gap: [0x00; 480],
+        second_signature: [0x72, 0x72, 0x41, 0x61],
+        free_count: [0xCF, 0x03, 0x01, 0x00],
+        next_free: [0x02, 0x00, 0x00, 0x00],
+        reserved12: [0x00; 12],
+        trail_signature: [0x00, 0x00, 0x55, 0xAA],
+    };
+    inject_fsinfo(&path_file, fsinfo)?;
 
     Ok(())
 
@@ -309,7 +332,7 @@ fn display_partition_info(p: &F32_1stPartition) {
 }
 
 fn chs_to_lba(c: u16, h: u8, s: u16, heads_per_cylinder: u16, sectors_per_track: u16) -> u32 {
-    ((c as u32 * heads_per_cylinder as u32 + h as u32) * sectors_per_track as u32 + (s as u32 - 1)) as u32
+    (c as u32 * heads_per_cylinder as u32 + h as u32) * sectors_per_track as u32 + (s as u32 - 1) //as u32
 }
 
 fn chs_decode(chs: [u8; 3]) -> (u16, u8, u16) {
@@ -363,7 +386,7 @@ fn inject_VBR(pathfile: &PathBuf, vbr: VBR) -> Result<()> {
 
     // Write at offset 1 MiB (0x100000)
     let mut file_handler = OpenOptions::new().read(true).write(true).open(pathfile)?;
-    let offset_vbr: u64 = 0x1_00_000;
+    let offset_vbr: u64 = 0x0010_0000;
 
     file_handler.seek(SeekFrom::Start(offset_vbr))?;
     file_handler.write_all(&bytes_to_inject)?;
@@ -372,3 +395,34 @@ fn inject_VBR(pathfile: &PathBuf, vbr: VBR) -> Result<()> {
 
     Ok(())
 }
+
+fn inject_fsinfo(pathfile: &PathBuf, fsinfo: FSInfo) -> Result<()> {
+    let mut bytes_to_inject = [0u8; 512];
+    // We need to inject it 2 times if I am not mistaken
+    bytes_to_inject[0x000..0x004].copy_from_slice(&fsinfo.lead_signature);
+    bytes_to_inject[0x004..0x1E4].copy_from_slice(&fsinfo.gap);
+    bytes_to_inject[0x1E4..0x1E8].copy_from_slice(&fsinfo.second_signature);
+    bytes_to_inject[0x1E8..0x1EC].copy_from_slice(&fsinfo.free_count);
+    bytes_to_inject[0x1EC..0x1F0].copy_from_slice(&fsinfo.next_free);
+    bytes_to_inject[0x1F0..0x1FC].copy_from_slice(&fsinfo.reserved12);
+    bytes_to_inject[0x1FC..0x200].copy_from_slice(&fsinfo.trail_signature);
+
+    let mut file_handler = OpenOptions::new().read(true).write(true).open(pathfile)?;
+    let offset_first_fsinfo: u64 = 0x0010_0200;
+    // TODO let offset_first_fsinfo: u64 = 0x0010_0200;
+
+    file_handler.seek(SeekFrom::Start(offset_first_fsinfo))?;
+    file_handler.write_all(&bytes_to_inject)?;
+
+    println!("FAT32 MSInfo, empty disk, injected (512 bytes) at offset {:#X} (LBA 2048)", offset_first_fsinfo);
+
+    Ok(())
+}
+
+//Sec
+// Next at 2054, 2048 + 6
+// adding some files and folders moved the FSInfo values
+// also modified the first FAT
+// Missing create the FATs
+// 104000 F8 FF FF 0F FF FF FF FF FF FF FF 0F 00 00 00 00
+// 145000 F8 FF FF 0F FF FF FF FF FF FF FF 0F 00 00 00 00
