@@ -1,12 +1,11 @@
-[org 0x7C00]
-;section stage1 start=0x7C00
+[org 0x0600]
+;section stage1 start=0x7C00 changed to support relocate
+byte_zero_plus_org: ; to calculate later instead of the ugly $-$$
+
 
 bits 16
-
-jmp aaa
-aaa:
-
 xchg bx, bx
+
 ;xor eax, eax
 ;xor ebx, ebx
 ;xor ecx, ecx
@@ -21,7 +20,7 @@ xchg bx, bx
 ;mov esi, eax
 
 ; Initialize segments and registers to a sane state
-xchg bx, bx
+
 cli             ; Disable interrupts
 xor ax, ax      ; set AX to 0
 mov ds, ax      ; set Data Segment to 0 
@@ -30,8 +29,7 @@ mov ss, ax      ; set Stack sgment to 0.
 mov sp, 0x7C00  ; Safe stack location. A push will not overlap and won't overwrite the first byte of bootloader
 sti
 
-jmp bbb
-bbb:
+
 
 relocate_mbr:
     ; No calling conventions. Not assuming AX, DS and ES = 0
@@ -48,14 +46,11 @@ relocate_mbr:
 
     ;[org 0x0600] ; 4th 512 bytes sector. 0x500 I guess is kinda safe too, or there be dragons. WE CANT DO THIS! maybe with sections
     ; track the CS:IP here
-    jmp 0x0000:0x062A
+    ;jmp gate_a20 ; This does not work because it is a short offset jump ORG + offset
+    ;jmp 0x0000:0x0626 ; Old, hardcoded way
+    jmp 0x0000:gate_a20 ; the offset is the label relative offset + ORG
 ;section .after_relocate follows=stage1 vstart=0x0600
 ;after_relocate_entry:
-jmp ccc
-ccc:
-
-call gate_a20
-jmp after_gate20
 ; Validate a20 enabled
 ; 
 gate_a20:
@@ -101,13 +96,13 @@ gate_a20:
     mov ax, 0
     je a20_is_disabled ; jumps if wraped, a20 disabled, and LOW was 0xFF when cmp with 0xFF happened. so AX = 0 (BAD)
     mov ax, 1 ; No jump above! a20enabld AX=1 (GOOD)    
-        a20_is_disabled: ; a20disabled AX=0
-        ret    
+    a20_is_disabled: ; a20disabled AX=0
+    ; TODO, enable the gate, so far bochs has it enable by default. Alter the order of ax 0 or 1 to dont crossjump
 
 ; 1,048,576 1 MiB 0xFFFF x 0x10 (65,535 x 16)
 ; 1,049,856 ES:DI 0xFFFF:0x510 ---0x10_0500 1280 bytes difference (0x510)
 ; 1,280 0x500
-after_gate20:
+
 
 
 
@@ -117,7 +112,8 @@ xor ax, ax      ; set AX to 0
 mov ds, ax 
 sti
 
-lea si, [msg - 0x7600]
+mov si, msg ;msg ;lea si, [msg - 0x7600] old shenanigans hen relocating and before changing ORG to 0x600
+
 
 .print_char:
     lodsb
@@ -134,9 +130,11 @@ lea si, [msg - 0x7600]
     hlt
     jmp .halt
 
-msg db 'ABCD', 0
+msg db 'ABCD1234', 0
 
-times 510-($-$$) db 0
+emitted_bytes_so_far_plus_org:
+;times 510 - ($ - $$) db 0
+times 510-(emitted_bytes_so_far_plus_org - byte_zero_plus_org) db 0
 dw 0xAA55
 
 
