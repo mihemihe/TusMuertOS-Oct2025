@@ -16,7 +16,7 @@ $(BIN_BOOTLOADER_STAGE1): force
 
 # Always update floppy image
 $(IMG_BOOTLOADER): $(BIN_BOOTLOADER_STAGE1) force
-	dd if=$(BIN_BOOTLOADER_STAGE1) of=$(IMG_BOOTLOADER) bs=512 count=1 conv=notrunc
+	dd if=$(BIN_BOOTLOADER_STAGE1) of=$(IMG_BOOTLOADER) bs=1014 count=1 conv=notrunc
 
 # Always regenerate disassembly
 $(ASM_DISASM_STAGE1): $(BIN_BOOTLOADER_STAGE1) force

@@ -5,6 +5,69 @@ byte_zero_plus_org: ; to calculate later instead of the ugly $-$$
 
 bits 16
 xchg bx, bx
+mov sp, 0x7C00 ;REMOVE THIS IS DUCPLIACTE DD @@@ @#!@#!@#@!#
+
+mov ax, 0x0000
+mov ah, 0x80
+mov ax, 0x00
+mov al, 0x80
+mov ax, 0x00
+mov ax, 0x80
+mov ax, 0x0000
+mov si, 0x0000
+
+xor eax, eax
+xor ebx, ebx
+xor ecx, ecx
+xor edx, edx
+
+
+mov ax, 0x15FA    
+mov si, ax ; the register to print in hex
+mov cl, 12
+decrease_shift_bits_loop:
+    cmp cl, 0
+    js .exit_sub
+    mov dx, si    
+    shr dx, cl
+    and dx, 0x000F
+    cmp dl, 10
+    jge .l1
+    add dl, 48
+    mov al, dl
+    jmp .l2
+
+    .l1:
+    add dl, 55
+    mov al, dl
+
+    .l2:
+        mov ah, 0x0E ; Write text in teletype mode
+        mov bh, 0x00 ; page number, text modes
+        mov bl, 0x07 ; light grey on black
+        int 0x10
+        sub cl, 4
+        jmp decrease_shift_bits_loop
+.exit_sub:
+
+
+
+
+
+;
+; / 0x10 moves 4 bits 
+;
+
+
+
+
+
+
+
+
+
+
+
 
 ;xor eax, eax
 ;xor ebx, ebx
@@ -112,18 +175,22 @@ xor ax, ax      ; set AX to 0
 mov ds, ax 
 sti
 
+
+
+
+
+
+
 mov si, msg ;msg ;lea si, [msg - 0x7600] old shenanigans hen relocating and before changing ORG to 0x600
-
-
-.print_char:
-    lodsb
-    test al, al
+print_char:
+    lodsb ; loads SI to AL
+    test al, al ; 0 terminated string, out !
     jz .halt
-    mov ah, 0x0E
-    mov bh, 0x00
-    mov bl, 0x07
+    mov ah, 0x0E ; Write text in teletype mode
+    mov bh, 0x00 ; page number, text modes
+    mov bl, 0x07 ; light grey on black
     int 0x10
-    jmp .print_char
+    jmp print_char
 
 .halt:
     xchg bx, bx
@@ -132,13 +199,19 @@ mov si, msg ;msg ;lea si, [msg - 0x7600] old shenanigans hen relocating and befo
 
 msg db 'ABCD1234', 0
 
+
+; GDT static data
+
+
 emitted_bytes_so_far_plus_org:
 ;times 510 - ($ - $$) db 0
 times 510-(emitted_bytes_so_far_plus_org - byte_zero_plus_org) db 0
 dw 0xAA55
+TIMES (512*5)-($-$$) db 0x05
 
 
 
 ; NOTES: 
 ; Moved the msg literal string to the bottom. If you place it at the top it counts as instructions if you load it as a plain binary
 ; This is what the linker and a proper executable format would handle for you.
+
