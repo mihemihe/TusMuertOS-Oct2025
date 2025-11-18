@@ -7,14 +7,7 @@ bits 16
 xchg bx, bx
 mov sp, 0x7C00 ;REMOVE THIS IS DUCPLIACTE DD @@@ @#!@#!@#@!#
 
-mov ax, 0x0000
-mov ah, 0x80
-mov ax, 0x00
-mov al, 0x80
-mov ax, 0x00
-mov ax, 0x80
-mov ax, 0x0000
-mov si, 0x0000
+
 
 xor eax, eax
 xor ebx, ebx
@@ -22,33 +15,7 @@ xor ecx, ecx
 xor edx, edx
 
 
-mov ax, 0x15FA    
-mov si, ax ; the register to print in hex
-mov cl, 12
-decrease_shift_bits_loop:
-    cmp cl, 0
-    js .exit_sub
-    mov dx, si    
-    shr dx, cl
-    and dx, 0x000F
-    cmp dl, 10
-    jge .l1
-    add dl, 48
-    mov al, dl
-    jmp .l2
 
-    .l1:
-    add dl, 55
-    mov al, dl
-
-    .l2:
-        mov ah, 0x0E ; Write text in teletype mode
-        mov bh, 0x00 ; page number, text modes
-        mov bl, 0x07 ; light grey on black
-        int 0x10
-        sub cl, 4
-        jmp decrease_shift_bits_loop
-.exit_sub:
 
 
 
@@ -179,6 +146,36 @@ sti
 
 
 
+; Read from disk
+
+
+mov ax, 0xCDEF    ; test tjhat all numbers and letters work
+mov si, ax ; the register to print in hex
+mov cl, 12
+decrease_shift_bits_loop:
+    cmp cl, 0
+    js .exit_sub
+    mov dx, si    
+    shr dx, cl
+    and dx, 0x000F
+    cmp dl, 10
+    jge .l1
+    add dl, 48
+    mov al, dl
+    jmp .l2
+
+    .l1:
+    add dl, 55
+    mov al, dl
+
+    .l2:
+        mov ah, 0x0E ; Write text in teletype mode
+        mov bh, 0x00 ; page number, text modes
+        mov bl, 0x07 ; light grey on black
+        int 0x10
+        sub cl, 4
+        jmp decrease_shift_bits_loop
+.exit_sub:
 
 
 mov si, msg ;msg ;lea si, [msg - 0x7600] old shenanigans hen relocating and before changing ORG to 0x600

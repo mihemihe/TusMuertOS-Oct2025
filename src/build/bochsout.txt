@@ -29,7 +29,7 @@
 00000000000i[USBCTL] Pluggable USB devices
 00000000000i[USBCTL]   floppy mouse tablet keypad keyboard hub disk cdrom
 00000000000i[USBCTL]   printer
-00000000000i[MEM0  ] allocated memory at 00000236FE62E040. after alignment, vector=00000236FE62F000, block_size = 512K
+00000000000i[MEM0  ] allocated memory at 000001D187763040. after alignment, vector=000001D187764000, block_size = 512K
 00000000000i[MEM0  ] 16.00MB
 00000000000i[MEM0  ] mem block size = 0x00080000, blocks=32
 00000000000i[MEM0  ] rom at 0xfffe0000/131072 ('C:\Program Files\Bochs-3.0/BIOS-bochs-latest')
@@ -41,7 +41,7 @@
 00000000000i[DEV   ] PIIX3 PCI-to-ISA bridge present at device 1, function 0
 00000000000i[PLUGIN] init_dev of 'cmos' plugin device by virtual method
 00000000000i[CMOS  ] Using local time for initial clock
-00000000000i[CMOS  ] Setting initial clock to: Sun Nov 16 19:18:17   2025 tz=utc (time0=1763320697)
+00000000000i[CMOS  ] Setting initial clock to: Tue Nov 18 14:19:57   2025 tz=utc (time0=1763475597)
 00000000000i[PLUGIN] init_dev of 'dma' plugin device by virtual method
 00000000000i[DMA   ] channel 4 used by cascade
 00000000000i[PLUGIN] init_dev of 'pic' plugin device by virtual method
@@ -285,27 +285,27 @@
 00001996924i[VBIOS ] VBE Bios ID: vbe.c 2025-01-08
 00004330604i[BIOS  ] Booting from 0000:7c00
 00004330660i[CPU0  ] [4330660] Stopped on MAGIC BREAKPOINT
-00004336259i[CPU0  ] [4336259] Stopped on MAGIC BREAKPOINT
-00004336259i[CPU0  ] CPU is in real mode (active)
-00004336259i[CPU0  ] CS.mode = 16 bit
-00004336259i[CPU0  ] SS.mode = 16 bit
-00004336259i[CPU0  ] EFER = 0x00000000: ffxsr nxe lma lme sce
-00004336259i[CPU0  ] XCR0=0x00000001: tiledata tilecfg hwp lbr uintr hdc cet_s cet_u pasid pkru pt hi_zmm zmm_hi256 opmask bndcfg bndregs ymm sse FPU
-00004336259i[CPU0  ] | EAX=00000e00  EBX=00000007  ECX=00000000  EDX=00000041
-00004336259i[CPU0  ] | ESP=00007c00  EBP=00000000  ESI=000e06d9  EDI=00000500
-00004336259i[CPU0  ] | EFLAGS=00000246: id vip vif ac vm rf nt IOPL=0 of df IF tf sf ZF af PF cf
-00004336259i[CPU0  ] | SEG sltr(index|ti|rpl)     base    limit G D
-00004336259i[CPU0  ] |  CS:0000( 0004| 0|  0) 00000000 0000ffff 0 0
-00004336259i[CPU0  ] |  DS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
-00004336259i[CPU0  ] |  SS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
-00004336259i[CPU0  ] |  ES:0000( 0005| 0|  0) 00000000 0000ffff 0 0
-00004336259i[CPU0  ] |  FS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
-00004336259i[CPU0  ] |  GS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
-00004336259i[CPU0  ] | EIP=000006cd (000006cd)
-00004336259i[CPU0  ] | CR0=0x60000010: pg CD NW ac wp ne ET ts em mp pe
-00004336259i[CPU0  ] | CR2=0x00000000
-00004336259i[CPU0  ] | CR3=0x00000000
-00004336259i[CPU0  ] | CR4=0x00000000: lass uintr pks cet pke smap smep keylock osxsave pcid fsgsbase smx vmx la57 umip osxmmexcpt osfxsr pce pge mce pae pse de tsd pvi vme
-00004336259d[PCI   ] Exit
-00004336259i[CMOS  ] Last time: 1763320697 tz=utc (Sun Nov 16 19:18:17   2025)
-00004336259i[SIM   ] quit_sim called with exit code 0
+00004336249i[CPU0  ] [4336249] Stopped on MAGIC BREAKPOINT
+00004336249i[CPU0  ] CPU is in real mode (active)
+00004336249i[CPU0  ] CS.mode = 16 bit
+00004336249i[CPU0  ] SS.mode = 16 bit
+00004336249i[CPU0  ] EFER = 0x00000000: ffxsr nxe lma lme sce
+00004336249i[CPU0  ] XCR0=0x00000001: tiledata tilecfg hwp lbr uintr hdc cet_s cet_u pasid pkru pt hi_zmm zmm_hi256 opmask bndcfg bndregs ymm sse FPU
+00004336249i[CPU0  ] | EAX=00000e00  EBX=00000007  ECX=000000fc  EDX=00000046
+00004336249i[CPU0  ] | ESP=00007c00  EBP=00000000  ESI=000e06c3  EDI=00000500
+00004336249i[CPU0  ] | EFLAGS=00000246: id vip vif ac vm rf nt IOPL=0 of df IF tf sf ZF af PF cf
+00004336249i[CPU0  ] | SEG sltr(index|ti|rpl)     base    limit G D
+00004336249i[CPU0  ] |  CS:0000( 0004| 0|  0) 00000000 0000ffff 0 0
+00004336249i[CPU0  ] |  DS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+00004336249i[CPU0  ] |  SS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+00004336249i[CPU0  ] |  ES:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+00004336249i[CPU0  ] |  FS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+00004336249i[CPU0  ] |  GS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+00004336249i[CPU0  ] | EIP=000006b7 (000006b7)
+00004336249i[CPU0  ] | CR0=0x60000010: pg CD NW ac wp ne ET ts em mp pe
+00004336249i[CPU0  ] | CR2=0x00000000
+00004336249i[CPU0  ] | CR3=0x00000000
+00004336249i[CPU0  ] | CR4=0x00000000: lass uintr pks cet pke smap smep keylock osxsave pcid fsgsbase smx vmx la57 umip osxmmexcpt osfxsr pce pge mce pae pse de tsd pvi vme
+00004336249d[PCI   ] Exit
+00004336249i[CMOS  ] Last time: 1763475597 tz=utc (Tue Nov 18 14:19:57   2025)
+00004336249i[SIM   ] quit_sim called with exit code 0

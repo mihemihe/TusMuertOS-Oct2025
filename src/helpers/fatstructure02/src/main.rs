@@ -97,7 +97,7 @@ fn main() -> Result<()> {
     let debug: bool = true;
     if debug {
         let synthetic_args = vec![
-            "emptydisk01", // always include argv[0]
+            "fatstructure02", // always include argv[0]
             "--filename",
             //"../../../aaa.img",
             "../tempimage.img",
