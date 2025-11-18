@@ -108,6 +108,7 @@ fn main() -> Result<()> {
         args = Args::parse();
         println!("{:?}", args);
     }
+
     let path_file = args.filename;
     // Health checks, file exist, not zero, multiple of 512 and 1MB, and is all 0x00
     println!("Validating file: {} and creating a FAT32 partition. Disk size 34Mb...", path_file.display());
@@ -115,17 +116,6 @@ fn main() -> Result<()> {
     check_file_exist(&path_file)?;
     validate_file(&path_file)?;
     check_all_zeroes(&path_file)?;
-
-    let partition_entry = F32_1stPartition {
-        boot_flag: 0x80,
-        start_chs: [0x00, 0x01, 0x10],
-        part_type: 0x0C,
-        end_chs: [0x03, 0xA0, 0x1F],
-        start_lba: 2048u32,
-        sectors: 67584u32,
-    };
-    display_partition_info(&partition_entry);
-    inject_fat32_partition_table(&path_file, partition_entry)?; //Add as argument the size of the first partition, right now hardcoded to 34
 
     let vbr = VBR {
         // Common part
@@ -173,8 +163,19 @@ fn main() -> Result<()> {
         // The FAT type is determined solely by the count of clusters on the volume
         // RootDirSectors = ((BPB_RootEntCnt * 32) + (BPB_BytsPerSec – 1)) / BPB_BytsPerSec . this gives 0, correct for FAT32
     };
-    inject_VBR(&path_file, vbr)?;
+    inject_VBR_and_backup(&path_file, vbr)?; //TODO This overwrites the partition entry. FIX Critical
 
+    let partition_entry = F32_1stPartition {
+        boot_flag: 0x80,
+        start_chs: [0x00, 0x01, 0x10],
+        part_type: 0x0C,
+        end_chs: [0x03, 0xA0, 0x1F],
+        start_lba: 2048u32,
+        sectors: 67584u32,
+    };
+    display_partition_info(&partition_entry);
+    inject_fat32_partition_table_three_times(&path_file, partition_entry)?; //Add as argument the size of the first partition, right now hardcoded to 34
+    // TODO: Partition entries x3 values might be wrong.
     // This is the FSInfo before adding any file
     let fsinfo = FSInfo {
         lead_signature: [0x52, 0x52, 0x61, 0x41],
@@ -237,7 +238,7 @@ fn check_all_zeroes(pathfile: &PathBuf) -> Result<()> {
     Ok(())
 }
 
-fn inject_fat32_partition_table(pathfile: &PathBuf, partition_entry: F32_1stPartition) -> Result<()> {
+fn inject_fat32_partition_table_three_times(pathfile: &PathBuf, partition_entry: F32_1stPartition) -> Result<()> {
     let mut bytes_to_inject = [0u8; 16];
     // using to_le_bytes() because integers are little-endian
     bytes_to_inject[0] = partition_entry.boot_flag;
@@ -252,12 +253,17 @@ fn inject_fat32_partition_table(pathfile: &PathBuf, partition_entry: F32_1stPart
     let mut file_handler = OpenOptions::new().read(true).write(true).open(pathfile)?;
     let offset_1st_partition_entry: u64 = 0x1BE; // byte 446 (off by one???)
     let offset_magic_boot_number: u64 = 0x1FE; // byte 510 (off by one???)
+    let offset_1st_partition_entry_on_vbr: u64 = 0x1BE + 0x0010_0000; // same entry into VBR
+    //1001BE, 1049022
 
     file_handler.seek(SeekFrom::Start(offset_1st_partition_entry))?;
     file_handler.write_all(&bytes_to_inject)?;
 
     file_handler.seek(SeekFrom::Start(offset_magic_boot_number))?;
     file_handler.write_all(&[0x55, 0xAA])?;
+
+    file_handler.seek(SeekFrom::Start(offset_1st_partition_entry_on_vbr))?;
+    file_handler.write_all(&bytes_to_inject)?;
 
     println!("Partition entry injected on MBR (16 bytes) offset {}", offset_1st_partition_entry);
     println!("Magic boot number injected on MBR (2 bytes) offset {}", offset_magic_boot_number);
@@ -349,7 +355,7 @@ fn chs_decode(chs: [u8; 3]) -> (u16, u8, u16) {
     (cylinder, head, sector.into())
 }
 
-fn inject_VBR(pathfile: &PathBuf, vbr: VBR) -> Result<()> {
+fn inject_VBR_and_backup(pathfile: &PathBuf, vbr: VBR) -> Result<()> {
     // Build the 512-byte VBR sector
     let mut bytes_to_inject = [0u8; 512];
 
@@ -387,8 +393,12 @@ fn inject_VBR(pathfile: &PathBuf, vbr: VBR) -> Result<()> {
     // Write at offset 1 MiB (0x100000)
     let mut file_handler = OpenOptions::new().read(true).write(true).open(pathfile)?;
     let offset_vbr: u64 = 0x0010_0000;
+    let offset_vbr_backup: u64 = 0x0010_0C00;
 
     file_handler.seek(SeekFrom::Start(offset_vbr))?;
+    file_handler.write_all(&bytes_to_inject)?;
+
+    file_handler.seek(SeekFrom::Start(offset_vbr_backup))?;
     file_handler.write_all(&bytes_to_inject)?;
 
     println!("FAT32 VBR injected (512 bytes) at offset {:#X} (LBA 2048)", offset_vbr);
